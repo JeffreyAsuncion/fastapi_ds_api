@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends
 import sqlalchemy
 
-from app.predict_json import predict_2021
-from app.city_state_json import city_state_2_id_num
+from app.data.predict_json import predict_2021
+from app.data.city_state_json import city_state_2_id_num
 
 router = APIRouter()
 
