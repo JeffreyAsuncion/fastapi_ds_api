@@ -16,10 +16,14 @@ states_pkl = pd.read_pickle('app/recommend/states_dataset.pkl')
 
 
 @router.get('/recommend')
-async def suggest_state_ids(city_state : str):
+async def suggest_state_ids(population : float, crime_rate : float, rental_rate : float, walk_score : float):
     '''Returns the list of 10 city_states with features
         
-        for a given city_state, i.e., "Newark, New Jersey"    
+        for User defined features
+        - population
+        - crime_rate
+        - rental_rate
+        - walk_score    
     
         This is a sample response of 2 recommended city_states
         
@@ -49,14 +53,21 @@ async def suggest_state_ids(city_state : str):
         NOTE: This route will return 10 recommmended city_states                
     '''
 
-    # use dictionary to find state_id
-    state_id = city_state_2_id_num[city_state]
-    
-    # pass state_id to model 
-    state_index = states_pkl.index[states_pkl['id_num'] == state_id]
+    # this is to convert user input into a dataframe
+    state_id = 30000  # this is a dummy value
+    # here we make a new dataframe based off the user preferrences
+    d = {"city_state": "user_def",
+        "id_num": 30000, 
+        "population" : population, 
+        "crime_rate" : crime_rate, 
+        "rental_rate": rental_rate, 
+        "walk_score" : walk_score}
+    dfa = pd.DataFrame([d])
+    # take 'state id' as INPUT
+    state_index = dfa.index[dfa['id_num'] == state_id]
+    # use 'state_id' to find state features
+    state_features = dfa.iloc[state_index, 2:].to_numpy()
 
-    # use 'state_id' to find state_features
-    state_features = states_pkl.iloc[state_index, 2:].to_numpy()
 
     # load pkl NearestNeighbors Model
     dist, indices = loaded_model.kneighbors(state_features)
